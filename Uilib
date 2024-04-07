@@ -6,8 +6,33 @@ local vim = game:GetService("VirtualInputManager")
 
 -- Function to handle button click
 local function onButtonClick()
-    -- Send the key event for V directly
+    -- Send the key event for P directly
     vim:SendKeyEvent(true, Enum.KeyCode.P, false, game)
+end
+
+-- Function to make the button draggable
+local function makeDraggable(button)
+    local dragStart
+    local startPos
+
+    button.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch then
+            dragStart = input.Position
+            startPos = button.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragStart = nil
+                end
+            end)
+        end
+    end)
+
+    button.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch and dragStart then
+            local delta = input.Position - dragStart
+            button.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
 end
 
 -- Function to create the GUI
@@ -33,7 +58,10 @@ local function createGUI()
     ImageButton.BorderSizePixel = 0
     ImageButton.Position = UDim2.new(0.579999983, 0, 0.680000007, 0)
     ImageButton.Size = UDim2.new(0, 39, 0, 39)
-    ImageButton.Image = "http://www.roblox.com/asset/?id= 17045241026"
+    ImageButton.Image = "http://www.roblox.com/asset/?id= 16792732223"
+
+    -- Make the button draggable
+    makeDraggable(ImageButton)
 
     -- Connect button click event to the function
     ImageButton.MouseButton1Click:Connect(onButtonClick)
